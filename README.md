@@ -21,7 +21,7 @@ Create crossword puzzles with ACROSS and DOWN clues tailored to any topic, perfe
 
 ## 📱 Mobile-First Design
 
-KIDMATICS is designed to work seamlessly on phones and tablets — because teachers don't always work from a desk.
+KIDMATICS is designed to work seamlessly on phones and tablets - because teachers don't always work from a desk.
 
 - Responsive layout for all screen sizes
 - Bottom navigation bar on mobile
