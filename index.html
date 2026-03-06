@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+  <title>KIDMATICS – AI Teaching Assistant</title>
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;800;900&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --ink: #0D0D0D;
+      --cream: #FFF8EE;
+      --lime: #C5F135;
+      --sky: #5BC4F5;
+      --peach: #FF8C69;
+      --card1: #FFE566;
+      --card2: #B5F0D3;
+      --card3: #D4C1FF;
+    }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    html { scroll-behavior:smooth; }
+    body { font-family:'DM Sans',sans-serif; background:var(--cream); color:var(--ink); overflow-x:hidden; }
+
+    nav {
+      display:flex; justify-content:space-between; align-items:center;
+      padding:1rem 1.4rem; background:var(--ink); position:sticky; top:0; z-index:99;
+    }
+    .logo { font-family:'Baloo 2',cursive; font-size:1.7rem; font-weight:900; color:var(--lime); letter-spacing:-1px; }
+    .logo span { color:var(--peach); }
+    .nav-launch {
+      background:var(--lime); color:var(--ink); font-weight:700; font-size:0.88rem;
+      padding:0.55rem 1.2rem; border-radius:50px; text-decoration:none;
+    }
+
+    .hero {
+      padding:3.5rem 1.4rem 4rem; background:var(--ink); color:white; position:relative; overflow:hidden;
+    }
+    .hero::after {
+      content:''; position:absolute; bottom:-1px; left:0; right:0; height:44px;
+      background:var(--cream); clip-path:ellipse(55% 100% at 50% 100%);
+    }
+    .hero-tag {
+      display:inline-block; background:var(--lime); color:var(--ink); font-weight:700;
+      font-size:0.75rem; letter-spacing:1.5px; text-transform:uppercase;
+      padding:0.35rem 0.9rem; border-radius:50px; margin-bottom:1.4rem;
+      animation:popIn 0.5s ease both;
+    }
+    .hero h1 {
+      font-family:'Baloo 2',cursive; font-size:clamp(2.4rem,9vw,3.8rem); font-weight:900;
+      line-height:1.08; margin-bottom:1.1rem; animation:slideUp 0.5s 0.1s ease both;
+    }
+    .hero h1 em { font-style:normal; color:var(--sky); }
+    .hero p {
+      font-size:1rem; color:#bbb; line-height:1.65; max-width:400px;
+      margin-bottom:2rem; animation:slideUp 0.5s 0.2s ease both;
+    }
+    .hero-cta { display:flex; gap:0.8rem; flex-wrap:wrap; animation:slideUp 0.5s 0.3s ease both; }
+
+    .btn-main {
+      background:var(--lime); color:var(--ink); font-weight:700; font-size:1rem;
+      padding:0.9rem 1.8rem; border-radius:14px; text-decoration:none; border:none;
+      cursor:pointer; display:inline-flex; align-items:center; gap:0.5rem;
+      box-shadow:0 4px 0 #8ab000; transition:transform 0.15s,box-shadow 0.15s;
+      font-family:'DM Sans',sans-serif;
+    }
+    .btn-main:active { transform:translateY(3px); box-shadow:0 1px 0 #8ab000; }
+    .btn-ghost {
+      background:transparent; color:white; border:2px solid #333; font-weight:600;
+      font-size:0.95rem; padding:0.9rem 1.6rem; border-radius:14px; text-decoration:none;
+    }
+
+    .features { padding:3.5rem 1.4rem; }
+    .section-label { font-size:0.8rem; font-weight:700; letter-spacing:2px; text-transform:uppercase; color:#999; margin-bottom:0.5rem; }
+    .section-title { font-family:'Baloo 2',cursive; font-size:clamp(1.8rem,6vw,2.6rem); font-weight:900; line-height:1.1; margin-bottom:2rem; }
+
+    .cards { display:flex; flex-direction:column; gap:1.2rem; }
+    .card {
+      border-radius:22px; padding:1.6rem; position:relative; overflow:hidden;
+      transition:transform 0.2s; cursor:pointer; text-decoration:none; color:var(--ink); display:block;
+    }
+    .card:active { transform:scale(0.98); }
+    .card.c1 { background:var(--card1); }
+    .card.c2 { background:var(--card2); }
+    .card.c3 { background:var(--card3); }
+    .card-num {
+      font-family:'Baloo 2',cursive; font-size:5rem; font-weight:900; opacity:0.13;
+      position:absolute; right:1rem; top:-0.5rem; line-height:1; pointer-events:none;
+    }
+    .card-icon { font-size:2.2rem; margin-bottom:0.8rem; }
+    .card h3 { font-family:'Baloo 2',cursive; font-size:1.4rem; font-weight:800; margin-bottom:0.5rem; }
+    .card p { font-size:0.92rem; color:rgba(0,0,0,0.6); line-height:1.55; }
+    .card-arrow {
+      display:inline-flex; align-items:center; justify-content:center;
+      width:38px; height:38px; background:var(--ink); color:white;
+      border-radius:50%; font-size:1.1rem; margin-top:1.2rem;
+    }
+
+    .how { padding:3rem 1.4rem; background:var(--ink); color:white; }
+    .how .section-label { color:#555; }
+    .how .section-title { color:white; }
+    .steps { display:flex; flex-direction:column; }
+    .step { display:flex; gap:1.2rem; padding:1.4rem 0; border-bottom:1px solid #1e1e1e; align-items:flex-start; }
+    .step:last-child { border-bottom:none; }
+    .step-n { font-family:'Baloo 2',cursive; font-size:2rem; font-weight:900; color:var(--lime); min-width:40px; line-height:1.1; }
+    .step h4 { font-family:'Baloo 2',cursive; font-size:1.15rem; font-weight:800; margin-bottom:0.3rem; }
+    .step p { font-size:0.88rem; color:#888; line-height:1.55; }
+
+    .demo { padding:3rem 1.4rem; }
+    .demo-phone {
+      background:var(--ink); border-radius:28px; padding:1.5rem; margin-top:1.5rem;
+      box-shadow:0 24px 60px rgba(0,0,0,0.22);
+    }
+    .phone-bar { height:5px; width:60px; background:#333; border-radius:10px; margin:0 auto 1.5rem; }
+    .demo-tabs { display:flex; gap:0.5rem; overflow-x:auto; padding-bottom:0.5rem; margin-bottom:1rem; scrollbar-width:none; }
+    .demo-tabs::-webkit-scrollbar { display:none; }
+    .dtab {
+      flex-shrink:0; padding:0.45rem 1rem; border-radius:50px; background:#1e1e1e; color:#777;
+      font-size:0.82rem; font-weight:600; cursor:pointer; border:none; font-family:'DM Sans',sans-serif;
+    }
+    .dtab.on { background:var(--lime); color:var(--ink); }
+    .demo-content {
+      background:#111; border-radius:16px; padding:1.2rem; min-height:180px;
+      font-size:0.88rem; line-height:1.7; color:#ccc; display:none;
+    }
+    .demo-content.on { display:block; }
+    .demo-content strong { color:var(--lime); }
+    .demo-content .pill {
+      display:inline-block; background:#222; color:var(--sky); font-size:0.72rem;
+      font-weight:700; padding:0.2rem 0.6rem; border-radius:50px; margin:0 0.2rem 0.3rem 0;
+    }
+
+    .cta {
+      margin:0 1.4rem 3rem; background:var(--lime); border-radius:24px;
+      padding:2.5rem 1.5rem; text-align:center;
+    }
+    .cta h2 { font-family:'Baloo 2',cursive; font-size:1.9rem; font-weight:900; margin-bottom:0.7rem; line-height:1.1; }
+    .cta p { font-size:0.95rem; color:rgba(0,0,0,0.6); margin-bottom:1.5rem; }
+    .btn-dark {
+      background:var(--ink); color:white; font-weight:700; font-size:1rem;
+      padding:0.9rem 2rem; border-radius:14px; text-decoration:none;
+      display:inline-flex; align-items:center; gap:0.5rem;
+    }
+
+    footer { background:var(--ink); color:#555; text-align:center; padding:1.5rem; font-size:0.82rem; }
+    footer strong { color:var(--lime); }
+
+    @keyframes popIn { from{opacity:0;transform:scale(0.85)} to{opacity:1;transform:scale(1)} }
+    @keyframes slideUp { from{opacity:0;transform:translateY(18px)} to{opacity:1;transform:translateY(0)} }
+
+    @media(min-width:640px) {
+      .cards { flex-direction:row; flex-wrap:wrap; }
+      .card { flex:1 1 calc(50% - 0.6rem); }
+      .hero,.features,.demo,.how { padding-left:3rem; padding-right:3rem; }
+      .cta { margin-left:3rem; margin-right:3rem; }
+    }
+    @media(min-width:900px) {
+      nav { padding:1rem 3rem; }
+      .card { flex:1 1 calc(33% - 0.8rem); }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">KID<span>MATICS</span></div>
+  <a href="dashboard.html" class="nav-launch">Open App →</a>
+</nav>
+
+<section class="hero">
+  <div class="hero-tag">🚀 Early Access · Built for Teachers</div>
+  <h1>Teaching tools,<br/><em>built by AI</em></h1>
+  <p>KIDMATICS helps teachers create quizzes, lesson plans & puzzles in seconds — so you spend less time preparing and more time teaching.</p>
+  <div class="hero-cta">
+    <a href="dashboard.html" class="btn-main">✨ Try It Free</a>
+    <a href="#features" class="btn-ghost">See Features</a>
+  </div>
+</section>
+
+<section class="features" id="features">
+  <p class="section-label">What it does</p>
+  <h2 class="section-title">Three tools.<br/>Endless lessons.</h2>
+  <div class="cards">
+    <a href="dashboard.html?tool=quiz" class="card c1">
+      <div class="card-num">01</div>
+      <div class="card-icon">📝</div>
+      <h3>Quiz Generator</h3>
+      <p>Generate multiple-choice, true/false, or short-answer quizzes on any topic and grade level in under 10 seconds.</p>
+      <div class="card-arrow">→</div>
+    </a>
+    <a href="dashboard.html?tool=lesson" class="card c2">
+      <div class="card-num">02</div>
+      <div class="card-icon">📚</div>
+      <h3>Lesson Plan Creator</h3>
+      <p>Build complete, curriculum-aligned 45-minute lesson plans with objectives, activities, and built-in assessment.</p>
+      <div class="card-arrow">→</div>
+    </a>
+    <a href="dashboard.html?tool=puzzle" class="card c3">
+      <div class="card-num">03</div>
+      <div class="card-icon">🧩</div>
+      <h3>Puzzle Maker</h3>
+      <p>Create crosswords and word activities that make vocabulary stick — and make class actually fun.</p>
+      <div class="card-arrow">→</div>
+    </a>
+  </div>
+</section>
+
+<section class="how">
+  <p class="section-label">The process</p>
+  <h2 class="section-title">Ready in 3 steps</h2>
+  <div class="steps">
+    <div class="step">
+      <div class="step-n">01</div>
+      <div><h4>Pick Your Tool</h4><p>Choose Quiz Generator, Lesson Plan Creator, or Puzzle Maker.</p></div>
+    </div>
+    <div class="step">
+      <div class="step-n">02</div>
+      <div><h4>Enter Topic + Grade</h4><p>Type your topic (e.g. "The Water Cycle") and select the grade level. That's it.</p></div>
+    </div>
+    <div class="step">
+      <div class="step-n">03</div>
+      <div><h4>Get & Use Instantly</h4><p>Your content is generated in seconds. Copy it straight into your lesson.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="demo" id="demo">
+  <p class="section-label">Live preview</p>
+  <h2 class="section-title">See what<br/>it creates</h2>
+  <div class="demo-phone">
+    <div class="phone-bar"></div>
+    <div class="demo-tabs">
+      <button class="dtab on" onclick="dTab('quiz',this)">📝 Quiz</button>
+      <button class="dtab" onclick="dTab('lesson',this)">📚 Lesson</button>
+      <button class="dtab" onclick="dTab('puzzle',this)">🧩 Puzzle</button>
+    </div>
+    <div id="d-quiz" class="demo-content on">
+      <strong>Quiz — The Water Cycle · Grade 5</strong><br/>
+      <span class="pill">Multiple Choice</span><span class="pill">10 Qs</span><span class="pill">Science</span><br/><br/>
+      <strong>Q1.</strong> What turns liquid water into vapour?<br/>
+      &nbsp; A) Condensation &nbsp; <strong style="color:#C5F135">B) Evaporation ✓</strong><br/>&nbsp; C) Precipitation &nbsp; D) Runoff<br/><br/>
+      <strong>Q2.</strong> Where does most evaporation occur?<br/>
+      &nbsp; A) Rivers &nbsp; B) Ice caps &nbsp; <strong style="color:#C5F135">C) Oceans ✓</strong> &nbsp; D) Lakes<br/><br/>
+      <span style="color:#444">+ 8 more questions generated…</span>
+    </div>
+    <div id="d-lesson" class="demo-content">
+      <strong>Lesson Plan — Fractions · Grade 4 · 45 min</strong><br/>
+      <span class="pill">Math</span><span class="pill">45 mins</span><br/><br/>
+      <strong>🎯 Objectives:</strong> Identify, compare, and add fractions with like denominators.<br/><br/>
+      <strong>⚡ Hook (5 min):</strong> "Split this pizza fairly between 3 friends — how?"<br/><br/>
+      <strong>📖 Activity (25 min):</strong> Fraction strips + pair work on worksheet.<br/><br/>
+      <strong>✅ Assessment (15 min):</strong> 5-question exit ticket + class review.
+    </div>
+    <div id="d-puzzle" class="demo-content">
+      <strong>Crossword — Human Body · Grade 6</strong><br/>
+      <span class="pill">10 Clues</span><span class="pill">Biology</span><br/><br/>
+      <strong>ACROSS</strong><br/>
+      3 → Pumps blood through the body → <strong style="color:#C5F135">HEART</strong><br/>
+      7 → Filters waste from blood → <strong style="color:#C5F135">KIDNEY</strong><br/><br/>
+      <strong>DOWN</strong><br/>
+      1 → You breathe with these → <strong style="color:#C5F135">LUNGS</strong><br/>
+      5 → Longest bone in the body → <strong style="color:#C5F135">FEMUR</strong><br/><br/>
+      <span style="color:#444">+ 6 more clues generated…</span>
+    </div>
+  </div>
+</section>
+
+<div class="cta">
+  <h2>Save hours.<br/>Every week.</h2>
+  <p>Teachers using KIDMATICS report saving 4+ hours of prep time weekly.</p>
+  <a href="dashboard.html" class="btn-dark">🚀 Launch KIDMATICS</a>
+</div>
+
+<footer>Made with ❤️ for teachers — <strong>KIDMATICS</strong> &copy; 2025</footer>
+
+<script>
+  function dTab(name, el) {
+    document.querySelectorAll('.demo-content').forEach(d => d.classList.remove('on'));
+    document.querySelectorAll('.dtab').forEach(t => t.classList.remove('on'));
+    document.getElementById('d-' + name).classList.add('on');
+    el.classList.add('on');
+  }
+</script>
+</body>
+</html>

@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+  <title>KIDMATICS – Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;800;900&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --ink: #0D0D0D;
+      --cream: #FFF8EE;
+      --lime: #C5F135;
+      --sky: #5BC4F5;
+      --peach: #FF8C69;
+      --surface: #ffffff;
+      --muted: #f3f3f3;
+      --border: #e8e8e8;
+    }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    html, body { height:100%; }
+    body {
+      font-family:'DM Sans',sans-serif; background:var(--cream);
+      color:var(--ink); display:flex; flex-direction:column; height:100%; overflow:hidden;
+    }
+
+    /* ── HEADER ── */
+    header {
+      background:var(--ink); padding:0.9rem 1.2rem;
+      display:flex; justify-content:space-between; align-items:center; flex-shrink:0;
+    }
+    .logo { font-family:'Baloo 2',cursive; font-size:1.5rem; font-weight:900; color:var(--lime); letter-spacing:-1px; }
+    .logo span { color:var(--peach); }
+    .back-link { color:#555; font-size:0.82rem; font-weight:600; text-decoration:none; }
+
+    /* ── TOOL TABS ── */
+    .tool-nav {
+      background:var(--surface); border-bottom:2px solid var(--border);
+      display:flex; overflow-x:auto; scrollbar-width:none; flex-shrink:0;
+    }
+    .tool-nav::-webkit-scrollbar { display:none; }
+    .tnav-btn {
+      flex:1; min-width:100px; padding:0.9rem 0.5rem; border:none; background:transparent;
+      font-family:'DM Sans',sans-serif; font-weight:600; font-size:0.82rem; color:#999;
+      cursor:pointer; border-bottom:3px solid transparent; margin-bottom:-2px;
+      transition:all 0.2s; white-space:nowrap;
+    }
+    .tnav-btn.active { color:var(--ink); border-bottom-color:var(--lime); }
+
+    /* ── SCROLL AREA ── */
+    .scroll-area { flex:1; overflow-y:auto; padding:1.2rem; display:flex; flex-direction:column; gap:1rem; }
+
+    /* ── INPUT CARD ── */
+    .input-card {
+      background:var(--surface); border-radius:18px; padding:1.3rem;
+      box-shadow:0 2px 10px rgba(0,0,0,0.06);
+    }
+    .input-card h3 {
+      font-family:'Baloo 2',cursive; font-size:1.15rem; font-weight:800; margin-bottom:1rem;
+    }
+    .field { display:flex; flex-direction:column; gap:0.3rem; margin-bottom:0.8rem; }
+    .field label { font-size:0.8rem; font-weight:600; color:#777; }
+    .field input, .field select, .field textarea {
+      padding:0.7rem 1rem; border:2px solid var(--border); border-radius:12px;
+      font-family:'DM Sans',sans-serif; font-size:0.95rem; color:var(--ink);
+      background:var(--muted); outline:none; transition:border-color 0.2s;
+      -webkit-appearance:none;
+    }
+    .field input:focus, .field select:focus, .field textarea:focus { border-color:var(--lime); background:white; }
+    .field textarea { resize:vertical; min-height:70px; }
+    .row2 { display:grid; grid-template-columns:1fr 1fr; gap:0.8rem; }
+
+    .gen-btn {
+      width:100%; padding:1rem; background:var(--ink); color:var(--lime);
+      border:none; border-radius:14px; font-family:'Baloo 2',cursive;
+      font-size:1.1rem; font-weight:800; cursor:pointer; display:flex;
+      align-items:center; justify-content:center; gap:0.5rem;
+      transition:transform 0.15s, opacity 0.2s; letter-spacing:0.3px;
+    }
+    .gen-btn:active { transform:scale(0.98); }
+    .gen-btn:disabled { opacity:0.5; cursor:not-allowed; transform:none; }
+
+    /* ── LOADING ── */
+    .loading-bar {
+      height:4px; border-radius:2px; background:var(--border); overflow:hidden; display:none;
+    }
+    .loading-bar.show { display:block; }
+    .loading-bar::after {
+      content:''; display:block; height:100%; width:40%; background:var(--lime);
+      border-radius:2px; animation:slide 1s ease-in-out infinite;
+    }
+    @keyframes slide {
+      0% { transform:translateX(-100%); }
+      100% { transform:translateX(350%); }
+    }
+
+    /* ── OUTPUT CARD ── */
+    .output-card {
+      background:var(--surface); border-radius:18px; padding:1.3rem;
+      box-shadow:0 2px 10px rgba(0,0,0,0.06); display:none;
+    }
+    .output-card.show { display:block; }
+    .output-head {
+      display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;
+    }
+    .output-head h3 { font-family:'Baloo 2',cursive; font-size:1.1rem; font-weight:800; }
+    .copy-btn {
+      padding:0.45rem 1rem; background:var(--muted); color:var(--ink); border:2px solid var(--border);
+      border-radius:50px; font-family:'DM Sans',sans-serif; font-weight:700; font-size:0.8rem; cursor:pointer;
+    }
+    .copy-btn.copied { background:var(--lime); border-color:var(--lime); }
+    .output-text {
+      background:var(--muted); border-radius:12px; padding:1.1rem;
+      font-size:0.9rem; line-height:1.8; color:#333; white-space:pre-wrap;
+      word-break:break-word; max-height:420px; overflow-y:auto;
+    }
+
+    /* ── BOTTOM NAV ── */
+    .bottom-nav {
+      background:var(--surface); border-top:2px solid var(--border);
+      display:flex; padding:0.6rem 0 0.8rem; flex-shrink:0;
+    }
+    .bnav-btn {
+      flex:1; border:none; background:transparent; font-family:'DM Sans',sans-serif;
+      font-size:0.72rem; font-weight:600; color:#bbb; cursor:pointer;
+      display:flex; flex-direction:column; align-items:center; gap:0.2rem; padding:0.3rem;
+    }
+    .bnav-btn .icon { font-size:1.4rem; }
+    .bnav-btn.active { color:var(--ink); }
+    .bnav-btn.active .icon { filter:drop-shadow(0 0 4px rgba(197,241,53,0.8)); }
+
+    @media(min-width:640px) {
+      .scroll-area { padding:1.8rem; max-width:680px; margin:0 auto; width:100%; }
+      .bottom-nav { display:none; }
+      .tool-nav .tnav-btn { flex:0 0 auto; padding:1rem 2rem; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="logo">KID<span>MATICS</span></div>
+  <a href="index.html" class="back-link">← Home</a>
+</header>
+
+<!-- TOOL TABS (desktop/tablet) -->
+<div class="tool-nav">
+  <button class="tnav-btn active" onclick="switchTool('quiz',this)">📝 Quiz Generator</button>
+  <button class="tnav-btn" onclick="switchTool('lesson',this)">📚 Lesson Plan</button>
+  <button class="tnav-btn" onclick="switchTool('puzzle',this)">🧩 Puzzle Maker</button>
+</div>
+
+<div class="scroll-area" id="scroll-area">
+
+  <!-- INPUT -->
+  <div class="input-card" id="input-card">
+    <h3 id="card-title">📝 Generate a Quiz</h3>
+
+    <div class="field">
+      <label>Topic / Subject *</label>
+      <input id="topic" type="text" placeholder="e.g. The Water Cycle, Fractions, World War II…"/>
+    </div>
+
+    <div class="row2">
+      <div class="field">
+        <label>Grade Level</label>
+        <select id="grade">
+          <option>Grade 1–2</option>
+          <option>Grade 3–4</option>
+          <option selected>Grade 5–6</option>
+          <option>Grade 7–8</option>
+          <option>Grade 9–10</option>
+          <option>Grade 11–12</option>
+        </select>
+      </div>
+      <div class="field" id="count-wrap">
+        <label id="count-label">No. of Questions</label>
+        <select id="count">
+          <option>5</option>
+          <option selected>10</option>
+          <option>15</option>
+          <option>20</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="field" id="qtype-wrap">
+      <label>Question Type</label>
+      <select id="qtype">
+        <option>Multiple Choice</option>
+        <option>True / False</option>
+        <option>Short Answer</option>
+        <option>Mixed</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <label>Extra Instructions (optional)</label>
+      <textarea id="extra" placeholder="e.g. Keep language simple, focus on application…"></textarea>
+    </div>
+
+    <button class="gen-btn" id="gen-btn" onclick="generate()">
+      <span>✨</span> <span id="btn-label">Generate Quiz</span>
+    </button>
+  </div>
+
+  <!-- LOADING -->
+  <div class="loading-bar" id="loading-bar"></div>
+
+  <!-- OUTPUT -->
+  <div class="output-card" id="output-card">
+    <div class="output-head">
+      <h3 id="output-title">Generated Quiz</h3>
+      <button class="copy-btn" id="copy-btn" onclick="copyOut()">📋 Copy</button>
+    </div>
+    <div class="output-text" id="output-text"></div>
+  </div>
+
+</div>
+
+<!-- BOTTOM NAV (mobile) -->
+<nav class="bottom-nav">
+  <button class="bnav-btn active" onclick="switchTool('quiz',this,true)">
+    <span class="icon">📝</span>Quiz
+  </button>
+  <button class="bnav-btn" onclick="switchTool('lesson',this,true)">
+    <span class="icon">📚</span>Lesson
+  </button>
+  <button class="bnav-btn" onclick="switchTool('puzzle',this,true)">
+    <span class="icon">🧩</span>Puzzle
+  </button>
+</nav>
+
+<script>
+  let tool = 'quiz';
+
+  const config = {
+    quiz: {
+      title: '📝 Generate a Quiz',
+      btn: 'Generate Quiz',
+      output: 'Generated Quiz',
+      showType: true,
+      countLabel: 'No. of Questions',
+    },
+    lesson: {
+      title: '📚 Create a Lesson Plan',
+      btn: 'Create Lesson Plan',
+      output: 'Your Lesson Plan',
+      showType: false,
+      countLabel: 'Duration',
+    },
+    puzzle: {
+      title: '🧩 Create a Puzzle',
+      btn: 'Make Puzzle',
+      output: 'Your Puzzle',
+      showType: false,
+      countLabel: 'No. of Clues',
+    },
+  };
+
+  function switchTool(name, el, isBottom) {
+    tool = name;
+    const c = config[name];
+
+    // Update active states
+    if (isBottom) {
+      document.querySelectorAll('.bnav-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.tnav-btn').forEach(b => b.classList.remove('active'));
+    } else {
+      document.querySelectorAll('.tnav-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.bnav-btn').forEach(b => b.classList.remove('active'));
+    }
+    el.classList.add('active');
+    // Sync the other nav
+    const allBtns = [...document.querySelectorAll('.tnav-btn'), ...document.querySelectorAll('.bnav-btn')];
+    allBtns.forEach(b => {
+      if (b.getAttribute('onclick') && b.getAttribute('onclick').includes(`'${name}'`)) b.classList.add('active');
+    });
+
+    document.getElementById('card-title').textContent = c.title;
+    document.getElementById('btn-label').textContent = c.btn;
+    document.getElementById('qtype-wrap').style.display = c.showType ? '' : 'none';
+    document.getElementById('count-label').textContent = c.countLabel;
+
+    if (name === 'lesson') {
+      document.getElementById('count').innerHTML = `<option>30 min</option><option selected>45 min</option><option>60 min</option>`;
+    } else {
+      document.getElementById('count').innerHTML = `<option>5</option><option selected>10</option><option>15</option><option>20</option>`;
+    }
+
+    document.getElementById('output-card').classList.remove('show');
+    document.getElementById('scroll-area').scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function buildPrompt() {
+    const topic = document.getElementById('topic').value || 'General Knowledge';
+    const grade = document.getElementById('grade').value;
+    const count = document.getElementById('count').value;
+    const extra = document.getElementById('extra').value;
+    const qtype = document.getElementById('qtype').value;
+
+    if (tool === 'quiz') {
+      return `Create a ${count}-question ${qtype} quiz about "${topic}" for ${grade} students.
+Number each question. For Multiple Choice, label options A/B/C/D and mark the correct answer with ✓ at the end. For True/False, state the answer. For Short Answer, provide a model answer.
+Make it grade-appropriate and clear.
+${extra ? 'Extra: ' + extra : ''}`;
+    }
+    if (tool === 'lesson') {
+      return `Create a detailed lesson plan for teaching "${topic}" to ${grade} students. Duration: ${count}.
+Use these sections: 🎯 Learning Objectives, 📦 Materials, ⚡ Hook/Introduction, 📖 Main Activity, ✅ Assessment, 💬 Wrap-Up.
+Keep it practical and engaging.
+${extra ? 'Extra: ' + extra : ''}`;
+    }
+    if (tool === 'puzzle') {
+      return `Create a crossword puzzle about "${topic}" for ${grade} students with ${count} clues.
+List ACROSS clues and DOWN clues separately. For each: give the number, the clue, and the answer in UPPERCASE.
+Keep vocabulary grade-appropriate.
+${extra ? 'Extra: ' + extra : ''}`;
+    }
+  }
+
+  async function generate() {
+    const topic = document.getElementById('topic').value.trim();
+    if (!topic) {
+      document.getElementById('topic').focus();
+      document.getElementById('topic').style.borderColor = '#FF6B6B';
+      setTimeout(() => document.getElementById('topic').style.borderColor = '', 1500);
+      return;
+    }
+
+    const btn = document.getElementById('gen-btn');
+    const bar = document.getElementById('loading-bar');
+    btn.disabled = true;
+    bar.classList.add('show');
+    document.getElementById('output-card').classList.remove('show');
+
+    try {
+      const res = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          model: 'claude-sonnet-4-20250514',
+          max_tokens: 1000,
+          messages: [{ role: 'user', content: buildPrompt() }]
+        })
+      });
+
+      const data = await res.json();
+      const text = data.content?.map(c => c.text || '').join('\n') || 'No content returned.';
+
+      document.getElementById('output-title').textContent = config[tool].output;
+      document.getElementById('output-text').textContent = text;
+      document.getElementById('output-card').classList.add('show');
+      document.getElementById('copy-btn').textContent = '📋 Copy';
+      document.getElementById('copy-btn').classList.remove('copied');
+
+      setTimeout(() => {
+        document.getElementById('output-card').scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 100);
+
+    } catch (err) {
+      document.getElementById('output-text').textContent = '⚠️ Could not connect. Check your internet and try again.\n\n' + err.message;
+      document.getElementById('output-card').classList.add('show');
+    } finally {
+      btn.disabled = false;
+      bar.classList.remove('show');
+    }
+  }
+
+  function copyOut() {
+    const text = document.getElementById('output-text').textContent;
+    navigator.clipboard.writeText(text).then(() => {
+      const btn = document.getElementById('copy-btn');
+      btn.textContent = '✅ Copied!';
+      btn.classList.add('copied');
+      setTimeout(() => { btn.textContent = '📋 Copy'; btn.classList.remove('copied'); }, 2500);
+    });
+  }
+
+  // Handle ?tool= param from landing page
+  const p = new URLSearchParams(location.search);
+  if (p.get('tool')) {
+    const t = p.get('tool');
+    const navBtn = [...document.querySelectorAll('.tnav-btn')].find(b => b.getAttribute('onclick').includes(`'${t}'`));
+    if (navBtn) switchTool(t, navBtn, false);
+  }
+</script>
+</body>
+</html>
